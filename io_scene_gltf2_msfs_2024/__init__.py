@@ -11,6 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import sys
+from pathlib import Path
+
+# Ensure _addons_utils is resolvable whether bundled inside this extension package
+# or located side-by-side in scripts/addons/ (legacy)
+_pkg_dir = Path(__file__).resolve().parent
+if (_pkg_dir / "_addons_utils").is_dir() and str(_pkg_dir) not in sys.path:
+    sys.path.insert(0, str(_pkg_dir))
+elif (_pkg_dir.parent / "_addons_utils").is_dir() and str(_pkg_dir.parent) not in sys.path:
+    sys.path.insert(0, str(_pkg_dir.parent))
+
 from _addons_utils.reload import reload_addon
 reload_addon(__name__)
 
@@ -46,6 +57,22 @@ class MSFS2024AddonPrefs(bpy.types.AddonPreferences):
     def draw(self, context):
         layout = self.layout
         layout.prop(self, "make_relative_on_save")
+
+        # Remote repository & update info
+        box = layout.box()
+        box.label(text="Repositório Remoto & Atualizações (Blender 4.2+ / 5.x):", icon="URL")
+        col = box.column(align=True)
+        col.label(text="Para atualizações automáticas, adicione o link abaixo em:")
+        col.label(text="Preferences > Get Extensions > Repositories > Add Remote Repository:")
+        row = col.row()
+        row.scale_y = 1.1
+        row.label(text="https://grd-brasil.github.io/GRD_gltf2_msfs2024/", icon="WORLD")
+        
+        row_btn = box.row(align=True)
+        op_gh = row_btn.operator("wm.url_open", text="GitHub Releases", icon="COMMUNITY")
+        op_gh.url = "https://github.com/GRD-Brasil/GRD_gltf2_msfs2024/releases"
+        op_repo = row_btn.operator("wm.url_open", text="Página da Extensão", icon="HELP")
+        op_repo.url = "https://grd-brasil.github.io/GRD_gltf2_msfs2024/"
 
 def get_addon_prefs():
     addon_name = __package__

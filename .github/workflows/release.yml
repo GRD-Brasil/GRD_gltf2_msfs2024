@@ -1,0 +1,114 @@
+name: Release and Extension Repository
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g. 6.4.9 or v6.4.9). Leave empty to use current manifest.'
+        required: false
+        default: ''
+      prerelease:
+        description: 'Mark as prerelease'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-release:
+    name: Build Packages and Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Determine Version
+        id: get_version
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          elif [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            TAG="${GITHUB_REF#refs/tags/}"
+            echo "VERSION=$TAG" >> $GITHUB_ENV
+          else
+            echo "VERSION=" >> $GITHUB_ENV
+          fi
+
+      - name: Build Packages & Extension Repository
+        run: |
+          if [ -n "$VERSION" ]; then
+            python tools/build_repo.py --output-dir dist --version "$VERSION"
+          else
+            python tools/build_repo.py --output-dir dist
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/') || github.event.inputs.version != ''
+        with:
+          name: "MSFS 2024 glTF Extension (${{ startsWith(env.VERSION, 'v') && env.VERSION || format('v{0}', env.VERSION) }})"
+          tag_name: ${{ startsWith(env.VERSION, 'v') && env.VERSION || format('v{0}', env.VERSION) }}
+          make_latest: "true"
+          files: |
+            dist/*.zip
+          prerelease: ${{ github.event.inputs.prerelease || false }}
+          generate_release_notes: true
+          body: |
+            ## Microsoft Flight Simulator 2024: glTF Extension
+            
+            Versão compatível com **Blender 5.0+, 5.2 LTS e Blender 4.x**.
+
+            ### ⚡ Repositório Remoto no Blender (Atualizações Automáticas)
+            Para receber atualizações com 1 clique direto no Blender, adicione em:
+            **Edit > Preferences > Get Extensions > Repositories > Add Remote Repository**
+            ```text
+            https://grd-brasil.github.io/GRD_gltf2_msfs2024/
+            ```
+
+            ### 📦 Downloads Manuais:
+            * **`io_scene_gltf2_msfs_2024-*.zip`**: Extensão para Blender 4.2+ e 5.x (pacote autocontido).
+            * **`io_scene_gltf2_msfs_2024-legacy-*.zip`**: Versão legada para Blender 3.3 a 4.1.
+
+      - name: Deploy to gh-pages Branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          force_orphan: true
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/
+
+  deploy-pages:
+    name: Deploy to GitHub Pages
+    needs: build-and-release
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

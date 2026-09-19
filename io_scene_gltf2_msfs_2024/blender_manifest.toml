@@ -1,0 +1,20 @@
+schema_version = "6.4.9"
+
+id = "io_scene_gltf2_msfs_2024"
+version = "6.4.9"
+name = "Microsoft Flight Simulator 2024: glTF Extension"
+tagline = "Toolkit to export/import glTF models for Microsoft Flight Simulator 2024"
+maintainer = "GRD-Brasil <https://github.com/GRD-Brasil>"
+type = "add-on"
+
+blender_version_min = "4.2.0"
+
+license = [
+    "SPDX:Apache-2.0",
+]
+
+website = "https://github.com/GRD-Brasil/GRD_gltf2_msfs2024"
+tags = ["Import-Export"]
+
+[permissions]
+files = "Import and export MSFS 2024 glTF models, textures and XML metadata to disk"

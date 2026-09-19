@@ -31,6 +31,10 @@ class Registration:
     def _recursive_module_search(self, path: str, root: str = ""):
         """ Recursively search for all modules in a given path """
         for _, module_name, ispkg in pkgutil.iter_modules([str(path)]):
+            # If _addons_utils is bundled inside another addon, don't register it as a subpackage
+            if root == "" and module_name == "_addons_utils" and self.__package != "_addons_utils":
+                continue
+
             if ispkg:
                 yield from self._recursive_module_search(
                     path / module_name,

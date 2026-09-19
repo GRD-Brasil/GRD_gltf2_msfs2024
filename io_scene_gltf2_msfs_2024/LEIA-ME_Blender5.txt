@@ -8,18 +8,24 @@ comportamento e identico ao addon original da Asobo.
 
 INSTALACAO
 ----------
-1. Blender > Edit > Preferences > Add-ons > menu (seta no canto) > Install from Disk...
-   e escolha este .zip.
-   (Alternativa manual: extraia as DUAS pastas do zip em
-    %APPDATA%\Blender Foundation\Blender\5.2\scripts\addons\ )
-2. Ative "Microsoft Flight Simulator 2024: glTF Extension".
-3. Mantenha o addon do MSFS 2020 ("Microsoft Flight Simulator glTF Extension",
-   pasta io_scene_gltf2_msfs) DESATIVADO ao mesmo tempo.
-4. Reinicie o Blender.
+OPCAO 1 - REPOSITORIO REMOTO NO BLENDER (Recomendado para Blender 4.2+ e 5.x):
+1. No Blender, vá em Edit > Preferences > Get Extensions.
+2. Clique no menu suspenso (canto superior direito) > Repositories.
+3. Clique em [+] > Add Remote Repository.
+4. Cole a URL: https://grd-brasil.github.io/GRD_gltf2_msfs2024/
+5. Na lista de extensões, localize "Microsoft Flight Simulator 2024: glTF Extension" e clique em Install.
+6. Atualizações futuras aparecerão automaticamente com o botão "Update"!
 
-As duas pastas sao obrigatorias:
-  io_scene_gltf2_msfs_2024  -> o addon
-  _addons_utils             -> biblioteca compartilhada do SDK (o addon nao carrega sem ela)
+OPCAO 2 - INSTALACAO MANUAL (.ZIP):
+1. Blender 4.2+ / 5.x:
+   Baixe o pacote de extensão (io_scene_gltf2_msfs_2024-<versao>.zip).
+   Ele é 100% autocontido (inclui _addons_utils internamente).
+   No Blender: Preferences > Get Extensions > menu > Install from Disk...
+2. Blender 3.3 a 4.1 (Legado):
+   Baixe io_scene_gltf2_msfs_2024-legacy-<versao>.zip.
+   Ele contém as duas pastas para extrair em %APPDATA%\Blender Foundation\Blender\<versao>\scripts\addons\
+
+Importante: Mantenha o addon do MSFS 2020 ("io_scene_gltf2_msfs") DESATIVADO ao mesmo tempo.
 
 PATCHES (diferencas em relacao ao SDK original)
 -----------------------------------------------
