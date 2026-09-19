@@ -1,0 +1,52 @@
+Microsoft Flight Simulator 2024: glTF Extension v6.4.9 - build compativel com Blender 5.x
+=========================================================================================
+
+Este pacote e o addon oficial do MSFS 2024 SDK (Tools\Blender\addons) com 3 patches
+para funcionar no Blender 5.0+ (testado no Blender 5.2.0 LTS em 2026-09-10).
+Os patches sao condicionados a versao: no Blender 3.3 / 3.6 / 4.2 / 4.5 LTS o
+comportamento e identico ao addon original da Asobo.
+
+INSTALACAO
+----------
+1. Blender > Edit > Preferences > Add-ons > menu (seta no canto) > Install from Disk...
+   e escolha este .zip.
+   (Alternativa manual: extraia as DUAS pastas do zip em
+    %APPDATA%\Blender Foundation\Blender\5.2\scripts\addons\ )
+2. Ative "Microsoft Flight Simulator 2024: glTF Extension".
+3. Mantenha o addon do MSFS 2020 ("Microsoft Flight Simulator glTF Extension",
+   pasta io_scene_gltf2_msfs) DESATIVADO ao mesmo tempo.
+4. Reinicie o Blender.
+
+As duas pastas sao obrigatorias:
+  io_scene_gltf2_msfs_2024  -> o addon
+  _addons_utils             -> biblioteca compartilhada do SDK (o addon nao carrega sem ela)
+
+PATCHES (diferencas em relacao ao SDK original)
+-----------------------------------------------
+1. io/exp/export_settings.py
+   Blender 5.0 moveu o modulo draco de io_scene_gltf2.io.com para io_scene_gltf2.io.exp.
+   Sem o patch o addon falha ja no import e nem aparece ativado.
+
+2. io/exp/gltf_exporter_patches.py
+   Blender 5.0 passa um InlineShaderNodes (e nao um Material) para gather_material_hook.
+   Todos os materiais MSFS quebravam na exportacao com
+   "'InlineShaderNodes' object has no attribute 'get'".
+   O inlining de materiais e desativado enquanto o addon esta registrado.
+
+3. blender/utils/msfs_geometry_node_utils.py
+   Blender 5.0 deixou de armazenar inputs de modifier Geometry Nodes como ID properties
+   (modifier["Socket_1"] -> "id properties not supported for this type").
+   Sem o patch, "Add MSFS2024 Gizmo" (Box/Sphere/Cylinder Collision, Bounding Volume)
+   falha, e qualquer gizmo existente quebra o import/export de ASOBO_gizmo_object.
+
+VALIDACAO REALIZADA (Blender 5.2.0 LTS)
+---------------------------------------
+- Export pelo Multi-Exporter (modo Objects): OK, 0 erros / 0 avisos.
+  Extensoes geradas: ASOBO_normal_map_convention, ASOBO_unique_id, ASOBO_material_*
+  (standard, glass_v2, draw_order, day_night_switch, UV_options, shadow_options),
+  ASOBO_advanced_light, ASOBO_tags, ASOBO_gizmo_object; animacao de objeto,
+  textura + XML de textura (TextureLib) e ModelInfo XML (LODs).
+- Gizmos Box / Sphere / Cylinder: criacao OK.
+- Import do glTF exportado: OK (materiais MSFS, luz MSFS, gizmos, unique ids preservados).
+
+Patches nao oficiais (nao sao da Asobo). Licenca do addon: Apache 2.0 (ver LICENSE.md).
