@@ -89,13 +89,14 @@ def sync_version(new_version: str):
 
     print(f"[*] Syncing version across files: {ver_clean} ({major}.{minor}.{patch})")
 
-    # 1. blender_manifest.toml
+    # 1. blender_manifest.toml - only replace the standalone "version" line, not "schema_version"
     manifest_text = MANIFEST_PATH.read_text(encoding="utf-8")
     updated_manifest = re.sub(
-        r'version\s*=\s*"[^"]+"',
+        r'^version\s*=\s*"[^"]+"',
         f'version = "{ver_clean}"',
         manifest_text,
         count=1,
+        flags=re.MULTILINE,
     )
     MANIFEST_PATH.write_text(updated_manifest, encoding="utf-8")
 
@@ -196,7 +197,7 @@ def generate_index_json(output_dir: Path, ext_zip: Path, manifest: dict) -> Path
     zip_hash = f"sha256:{hashlib.sha256(zip_bytes).hexdigest()}"
 
     ext_entry = {
-        "schema_version": manifest.get("schema_version", "1.0.0"),
+        "schema_version": "1.0.0",
         "id": manifest.get("id", "io_scene_gltf2_msfs_2024"),
         "name": manifest.get("name", "Microsoft Flight Simulator 2024: glTF Extension"),
         "version": manifest.get("version", "6.4.9"),
