@@ -1,0 +1,29 @@
+{
+  "version": "v1",
+  "blocklist": [],
+  "data": [
+    {
+      "schema_version": "1.0.0",
+      "id": "io_scene_gltf2_msfs_2024",
+      "name": "Microsoft Flight Simulator 2024: glTF Extension",
+      "version": "6.4.9",
+      "tagline": "Toolkit to export/import glTF models for Microsoft Flight Simulator 2024",
+      "maintainer": "GRD-Brasil <https://github.com/GRD-Brasil>",
+      "type": "add-on",
+      "blender_version_min": "4.2.0",
+      "license": [
+        "SPDX:Apache-2.0"
+      ],
+      "website": "https://github.com/GRD-Brasil/GRD_gltf2_msfs2024",
+      "tags": [
+        "Import-Export"
+      ],
+      "archive_url": "./io_scene_gltf2_msfs_2024-6.4.9.zip",
+      "archive_size": 544220,
+      "archive_hash": "sha256:a0446ad0610aa7a3c66f9f1c6f2429541d5bf7172ab5d09845d34ecf29412559",
+      "permissions": {
+        "files": "Import and export MSFS 2024 glTF models, textures and XML metadata to disk"
+      }
+    }
+  ]
+}
